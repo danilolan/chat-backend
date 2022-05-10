@@ -16,4 +16,4 @@ app.use(express.json())
 routes(app)
 sockets(io)
 
-server.listen(port, () => console.log('Server is listen on port: ', port))
+server.listen(process.env.PORT || port, () => console.log('Server is listen on port: ', port))
