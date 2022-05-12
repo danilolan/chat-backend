@@ -1,8 +1,4 @@
-import { Socket } from 'socket.io'
-
-const users = []
-
-const messages = {
+const roomsData = {
   room1: [],
   room2: []
 }
@@ -14,7 +10,13 @@ export default function sockets (io) {
     socket.on('join room', (roomName, callback) => {
       socket.join(roomName)
       console.log(`The socket ${socket.id} enter in chat ${roomName}`)
-      callback(messages[roomName])
+
+      if (roomsData[roomName]) {
+        callback(roomsData[roomName])
+      } else {
+        roomsData[roomName] = []
+        callback(roomsData[roomName])
+      }
     })
 
     socket.on('send message', ({ roomName, author, content }) => {
@@ -24,11 +26,11 @@ export default function sockets (io) {
         author
       }
 
-      if (messages[roomName]) {
-        messages[roomName].push(payload)
+      if (roomsData[roomName]) {
+        roomsData[roomName].push(payload)
       }
 
-      io.sockets.in(roomName).emit('new message', messages[roomName])
+      io.sockets.in(roomName).emit('new message', roomsData[roomName])
     })
 
     socket.on('disconnect', (socket) => {
